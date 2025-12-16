@@ -1,10 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Vercel Website</title>
+  <title>AutoGrow AI</title>
 </head>
 <body>
-  <h1>Website is live 🚀</h1>
-  <p>This site is successfully deployed on Vercel.</p>
+  <h2>AI Content Generator</h2>
+
+  <textarea id="input" placeholder="Describe your business and offer" rows="5" cols="40"></textarea>
+  <br><br>
+
+  <button onclick="generate()">Generate AI Content</button>
+
+  <p><strong>AI Output:</strong></p>
+  <div id="output"></div>
+
+  <script>
+    async function generate() {
+      document.getElementById("output").innerText = "Generating...";
+
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: document.getElementById("input").value
+        })
+      });
+
+      const data = await response.json();
+      document.getElementById("output").innerText = data.result;
+    }
+  </script>
 </body>
 </html>
+
