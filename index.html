@@ -29,11 +29,12 @@
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      body: JSON.stringify({
   text: `Write a ${document.getElementById("platform").value} promotional message.
 Business: ${document.getElementById("business").value}.
 Offer: ${document.getElementById("input").value}`
 })
+
 
       });
 
