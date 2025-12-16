@@ -30,26 +30,53 @@
 
   <p><strong>AI Output:</strong></p>
   <div id="output"></div>
+<h3>History</h3>
+<ul id="history"></ul>
 
   <script>
-    async function generate() {
-      document.getElementById("output").innerText = "Generating...";
+<script>
+  function saveToHistory(text) {
+    let history = JSON.parse(localStorage.getItem("history")) || [];
+    history.unshift(text);
+    localStorage.setItem("history", JSON.stringify(history.slice(0, 10)));
+    renderHistory();
+  }
 
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+  function renderHistory() {
+    const history = JSON.parse(localStorage.getItem("history")) || [];
+    const list = document.getElementById("history");
+    list.innerHTML = "";
+    history.forEach(item => {
+      const li = document.createElement("li");
+      li.innerText = item;
+      li.onclick = () => {
+        document.getElementById("output").innerText = item;
+      };
+      list.appendChild(li);
+    });
+  }
+
+  async function generate() {
+    document.getElementById("output").innerText = "Generating...";
+
+    const response = await fetch("/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-  text: `Write a ${document.getElementById("platform").value} promotional message.
+        text: `Write a ${document.getElementById("platform").value} promotional message.
 Business: ${document.getElementById("business").value}.
 Offer: ${document.getElementById("input").value}`
-})
+      })
+    });
 
+    const data = await response.json();
+    document.getElementById("output").innerText = data.result;
+    saveToHistory(data.result);
+  }
 
-      });
+  renderHistory();
+</script>
 
-      const data = await response.json();
-      document.getElementById("output").innerText = data.result;
-    }
   </script>
 </body>
 </html>
