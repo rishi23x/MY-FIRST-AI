@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     const userText = req.body.text;
 
     const response = await fetch(
-      "https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct",
+      "https://api-inference.huggingface.co/models/distilgpt2",
       {
         method: "POST",
         headers: {
@@ -11,26 +11,27 @@ export default async function handler(req, res) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          inputs: `Write a short promotional message for this business:\n${userText}`
+          inputs: `Write a short promotional message:\n${userText}`
         })
       }
     );
 
     const data = await response.json();
 
-    if (!data || data.error) {
-      return res.status(500).json({
-        result: "AI is waking up. Please try again in 30 seconds."
+    if (data.error) {
+      return res.status(200).json({
+        result: "AI is loading. Click Generate again in 20 seconds."
       });
     }
 
     res.status(200).json({
-      result: data[0]?.generated_text || "No response generated."
+      result: data[0]?.generated_text || "Try again."
     });
 
-  } catch (error) {
-    res.status(500).json({
-      result: "Something went wrong. Try again."
+  } catch {
+    res.status(200).json({
+      result: "Temporary issue. Try again."
     });
   }
 }
+
