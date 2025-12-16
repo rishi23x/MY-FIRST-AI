@@ -6,8 +6,16 @@
 <body>
   <h2>AI Content Generator</h2>
 
-  <textarea id="input" placeholder="Describe your business and offer" rows="5" cols="40"></textarea>
-  <br><br>
+<select id="business">
+  <option value="grocery store">Grocery Store</option>
+  <option value="restaurant">Restaurant</option>
+  <option value="salon">Salon</option>
+  <option value="local service">Local Service</option>
+</select>
+
+<br><br>
+
+<textarea id="input" placeholder="Describe your offer (e.g. 20% off on fruits today)" rows="4" cols="40"></textarea>
 
   <button onclick="generate()">Generate AI Content</button>
 
@@ -22,8 +30,11 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          text: document.getElementById("input").value
-        })
+  text: `Write a ${document.getElementById("platform").value} promotional message.
+Business: ${document.getElementById("business").value}.
+Offer: ${document.getElementById("input").value}`
+})
+
       });
 
       const data = await response.json();
