@@ -4,80 +4,89 @@
   <title>AutoGrow AI</title>
 </head>
 <body>
+
   <h2>AI Content Generator</h2>
 
-<select id="business">
-  <option value="grocery store">Grocery Store</option>
-  <option value="restaurant">Restaurant</option>
-  <option value="salon">Salon</option>
-  <option value="local service">Local Service</option>
-</select>
-
-<br><br>
+  <select id="business">
+    <option value="grocery store">Grocery Store</option>
+    <option value="restaurant">Restaurant</option>
+    <option value="salon">Salon</option>
+    <option value="local service">Local Service</option>
+  </select>
 
   <br><br>
 
-<select id="platform">
-  <option value="WhatsApp">WhatsApp</option>
-  <option value="Instagram">Instagram</option>
-</select>
+  <select id="platform">
+    <option value="WhatsApp">WhatsApp</option>
+    <option value="Instagram">Instagram</option>
+  </select>
 
-<br><br>
-  
-<textarea id="input" placeholder="Describe your offer (e.g. 20% off on fruits today)" rows="4" cols="40"></textarea>
+  <br><br>
+
+  <textarea
+    id="input"
+    placeholder="Describe your offer (e.g. 20% off on fruits today)"
+    rows="4"
+    cols="40"></textarea>
+
+  <br><br>
 
   <button onclick="generate()">Generate AI Content</button>
 
   <p><strong>AI Output:</strong></p>
   <div id="output"></div>
-<h3>History</h3>
-<ul id="history"></ul>
+
+  <h3>History</h3>
+  <ul id="history"></ul>
 
   <script>
-<script>
-  function saveToHistory(text) {
-    let history = JSON.parse(localStorage.getItem("history")) || [];
-    history.unshift(text);
-    localStorage.setItem("history", JSON.stringify(history.slice(0, 10)));
-    renderHistory();
-  }
+    function saveToHistory(text) {
+      let history = JSON.parse(localStorage.getItem("history")) || [];
+      history.unshift(text);
+      localStorage.setItem("history", JSON.stringify(history.slice(0, 10)));
+      renderHistory();
+    }
 
-  function renderHistory() {
-    const history = JSON.parse(localStorage.getItem("history")) || [];
-    const list = document.getElementById("history");
-    list.innerHTML = "";
-    history.forEach(item => {
-      const li = document.createElement("li");
-      li.innerText = item;
-      li.onclick = () => {
-        document.getElementById("output").innerText = item;
-      };
-      list.appendChild(li);
-    });
-  }
+    function renderHistory() {
+      const history = JSON.parse(localStorage.getItem("history")) || [];
+      const list = document.getElementById("history");
+      list.innerHTML = "";
+      history.forEach(item => {
+        const li = document.createElement("li");
+        li.innerText = item;
+        li.onclick = () => {
+          document.getElementById("output").innerText = item;
+        };
+        list.appendChild(li);
+      });
+    }
 
-  async function generate() {
-    document.getElementById("output").innerText = "Generating...";
+    async function generate() {
+      document.getElementById("output").innerText = "Generating...";
 
-    const response = await fetch("/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        text: `Write a ${document.getElementById("platform").value} promotional message.
+      try {
+        const response = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: `Write a ${document.getElementById("platform").value} promotional message.
 Business: ${document.getElementById("business").value}.
 Offer: ${document.getElementById("input").value}`
-      })
-    });
+          })
+        });
 
-    const data = await response.json();
-    document.getElementById("output").innerText = data.result;
-    saveToHistory(data.result);
-  }
+        const data = await response.json();
+        document.getElementById("output").innerText = data.result;
+        saveToHistory(data.result);
 
-  renderHistory();
-</script>
+      } catch (err) {
+        document.getElementById("output").innerText =
+          "Something went wrong. Please try again.";
+      }
+    }
 
+    renderHistory();
   </script>
+
 </body>
 </html>
-
