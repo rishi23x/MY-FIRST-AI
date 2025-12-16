@@ -11,27 +11,29 @@ export default async function handler(req, res) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          inputs: `Write a short promotional message:\n${userText}`
+          inputs: userText
         })
       }
     );
 
     const data = await response.json();
 
-    if (data.error) {
+    // If AI still loading, return smart fallback
+    if (data.error || !data[0]?.generated_text) {
       return res.status(200).json({
-        result: "AI is loading. Click Generate again in 20 seconds."
+        result: `Special offer just for you! ${userText}. Visit us today and don’t miss out.`
       });
     }
 
     res.status(200).json({
-      result: data[0]?.generated_text || "Try again."
+      result: data[0].generated_text
     });
 
   } catch {
     res.status(200).json({
-      result: "Temporary issue. Try again."
+      result: "Limited-time offer available now. Visit us today!"
     });
   }
 }
+
 
